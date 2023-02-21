@@ -215,23 +215,3 @@ void PORT3_IRQHandler(void)
         event = BUTTON2_PRESSED;
     }
 }
-
-/*
- ---MAIN---
- cities:
- Rome-Tokyo-New york-Moscou
- for each city:
- temperature
- weather type
-
- ---Extensions---
- your house:
- room temperature
- current time
- CURRENT TIME ONLY ITALY
- all cities clock time
- weather icon
-
- ///JUST IN CASE///
- alarm clock
- */
