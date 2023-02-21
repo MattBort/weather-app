@@ -64,7 +64,7 @@ This part of the project allows comunication with an API through a WiFi connecti
     #define SSID_NAME "YOUR_AP_SSID"
     #define PASSKEY "YOUR_WIFI_PASSWORD"   
 ```
-Then the request, response information(server and GET request) and lenght is defined using a mock API:
+Then the request, response information(server and GET request) and lenght is defined. We used a mock API to test our application.
 
 ```c
     #define MOCK_SERVER  "cctest.free.beeceptor.com"
@@ -94,10 +94,10 @@ The necessary variables for the communication are instantiated with a struct:
 
 A connection with the WiFi is then created if the credentials are correct and the application receives data by creating the request with the values already defined and communicating with UDP sockets. The response from the server is saved in the `Recvbuff` via the `getResponse` function. Note that the response is received if each step of the communication is succesfull, otherwise the application loops indefinitely and gives errors.
 
-Afterwards, the microcontroller is disconnected from the WiFi `disconnectFromAP` and the execution ends. For part 2 we assume a correct JSON response has been sent to correctly display information.
+Afterwards, the microcontroller is disconnected from the WiFi `disconnectFromAP` and the execution ends. For part 2 we assume a correct JSON response has been sent to display information.
 
 # Part 2: code analysis
-In the second part the LCD screen and pushbuttons are used to display the data using an FSM. Each state is triggered by the next/previous pushbuttons of the BoosterPack MKII. We defined 4 states(one for each city) with the correspondent functions in the `weather.h` header file and the button press events that are used to trigger the corresponding interrupt to display the correct city.
+In the second part the LCD screen and pushbuttons are used to display the data using an FSM. Each state is triggered by the next/previous pushbuttons of the BoosterPack MKII. We defined 4 states(one for each city) with the correspondent functions in the `weather.h` header file and the button press events that are used to trigger the corresponding interrupt to display the city.
 
 In the main file we instantiate the FSM and the `current_state` and `event` variable. The current state is set to the first city to be displayed which is Rome and the event to None:
 
@@ -119,7 +119,7 @@ The interrupts are enabled in the hardware initialization function as follow:
     Interrupt_enableInterrupt(INT_PORT3);
     Interrupt_enableInterrupt(INT_PORT5);
 ```
-Note that the flag is cleared to avoid wrongfull trigger before a button is pressed. `GPIO_PORT_P3,  GPIO_PIN5` refers the the top pushbutton and `GPIO_PORT_P5,  GPIO_PIN1` to the bottom one. `Interrupt_enableInterrupt` enables the port interrupt function to be called.
+Note that the flag is cleared to avoid wrongfull trigger before a button is pressed. `GPIO_PORT_P3, GPIO_PIN5` refers the the top pushbutton and `GPIO_PORT_P5, GPIO_PIN1` to the bottom one. `Interrupt_enableInterrupt` enables the port interrupt function to be called.
 
 Two interrupts are used for the pushbuttons as follows:
 
