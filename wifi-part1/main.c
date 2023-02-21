@@ -280,8 +280,6 @@ static _i32 getData()
     _u8 *p_endPtr = NULL;
     _i32 retVal = -1;
 
-    //char *app_data = NULL;
-
     pal_Memset(g_AppData.Recvbuff, 0, sizeof(g_AppData.Recvbuff));
 
     /* Puts together the HTTP GET string. */
@@ -310,29 +308,6 @@ static _i32 getData()
     }
 
     g_AppData.Recvbuff[pal_Strlen(g_AppData.Recvbuff)] = '\0';
-
-    // --------------------------------------
-    //TODO STRING MANIPULATION TO GET CITI'S DATA.
-    // ------------------------------------
-
-    /*Get city name*/
-    p_startPtr = (_u8*) pal_Strstr(g_AppData.Recvbuff, "City:");
-    if ( NULL != p_startPtr)
-    {
-        p_startPtr = p_startPtr + pal_Strlen("City:");
-        p_endPtr = (_u8*) pal_Strstr(p_startPtr, "\x0a");
-        //app_data = (char*) p_startPtr;
-    }
-
-    int len = p_endPtr - p_startPtr;
-    _u8 *city = NULL;
-
-    pal_Strcpy(city, p_startPtr);
-
-    /*strncpy(city, (const char *)p_startPtr, len);
-    strcat(city, "\0");*/
-
-    printf("%s", city);
 
     return SUCCESS;
 }
