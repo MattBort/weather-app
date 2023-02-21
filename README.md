@@ -85,9 +85,7 @@ The necessary variables for the communication are instantiated with a struct:
     {
         _u8 Recvbuff[MAX_SEND_RCV_SIZE];
         _u8 SendBuff[MAX_SEND_BUF_SIZE];
-
         _u8 HostName[SMALL_BUF];
-
         _u32 DestinationIP;
         _i16 SockID;
     } g_AppData;
