@@ -58,27 +58,103 @@ weather app
 Then add simplelink_msp432p4_sdk_3_40_01_02/source/ti/devices/msp432p4xx/driverlib/ccs/msp432p4xx_driverlib.lib and ../source/ti/grlib/lib/css/m4f/grlib.a to "Include library file..." in CCS Build->ARM linker->File Search Path.
 4. Build the project and start debugging with the MSP432 plugged in to run the app.
 
-#### Team members
+# Part 1: code analysis
+This part of the project allows comunication with an API through a WiFi connection. We used our personal WiFi router to connect to the internet and send a request. The credentials are defined as follows:
+```c
+    #define SSID_NAME "YOUR_AP_SSID"
+    #define PASSKEY "YOUR_WIFI_PASSWORD"   
+```
+Then the request, response information(server and GET request) and lenght is defined using a mock API:
+
+```c
+    #define MOCK_SERVER  "cctest.free.beeceptor.com"
+
+    #define PREFIX_BUFFER   "GET /my/api/path"
+    #define POST_BUFFER     " HTTP/1.1\r\nHost:cctest.free.beeceptor.com\r\nAccept: */"
+    #define POST_BUFFER2    "*\r\n\r\n"
+
+    #define SMALL_BUF           32 //For hostname
+    #define MAX_SEND_BUF_SIZE   512
+    #define MAX_SEND_RCV_SIZE   300
+```
+The necessary variables for the communication are instantiated with a struct:
+
+```c
+    struct
+    {
+        _u8 Recvbuff[MAX_SEND_RCV_SIZE];
+        _u8 SendBuff[MAX_SEND_BUF_SIZE];
+
+        _u8 HostName[SMALL_BUF];
+
+        _u32 DestinationIP;
+        _i16 SockID;
+    } g_AppData;
+```
+
+A connection with the WiFi is then created if the credentials are correct and the application receives data by creating the request with the values already defined and communicating with UDP sockets. The response from the server is saved in the `Recvbuff` via the `getResponse` function. Note that the response is received if each step of the communication is succesfull, otherwise the application loops indefinitely and gives errors.
+
+Afterwards, the microcontroller is disconnected from the WiFi `disconnectFromAP` and the execution ends. For part 2 we assume a correct JSON response has been sent to correctly display information.
+
+# Part 2: code analysis
+In the second part the LCD screen and pushbuttons are used to display the data using an FSM. Each state is triggered by the next/previous pushbuttons of the BoosterPack MKII. We defined 4 states(one for each city) with the correspondent functions in the `weather.h` header file and the button press events that are used to trigger the corresponding interrupt to display the correct city.
+
+In the main file we instantiate the FSM and the `current_state` and `event` variable. The current state is set to the first city to be displayed which is Rome and the event to None:
+
+```c
+    State_t current_state = STATE_ROME;
+    Event_t event = EVENT_NONE;
+    StateMachine_t fsm[] = { { STATE_ROME, fn_ROME }, { STATE_MOSCOU, fn_MOSCOU }, {STATE_NEWYORK, fn_NEWYORK }, { STATE_TOKYO, fn_TOKYO } };
+```
+In the main function, the hardware, graphics, internal clocks and interrupts are initialized via the `_hwInit` and `_graphicsInit` functions and the first city is displayed. The microcontrollers then goes into low power mode and waits for an interrupt.
+
+The interrupts are enabled in the hardware initialization function as follow:
+```c
+    GPIO_clearInterruptFlag(GPIO_PORT_P3, GPIO_PIN5);
+    GPIO_clearInterruptFlag(GPIO_PORT_P5, GPIO_PIN1);
+
+    GPIO_enableInterrupt(GPIO_PORT_P3, GPIO_PIN5);
+    GPIO_enableInterrupt(GPIO_PORT_P5, GPIO_PIN1);
+
+    Interrupt_enableInterrupt(INT_PORT3);
+    Interrupt_enableInterrupt(INT_PORT5);
+```
+Note that the flag is cleared to avoid wrongfull trigger before a button is pressed. `GPIO_PORT_P3,  GPIO_PIN5` refers the the top pushbutton and `GPIO_PORT_P5,  GPIO_PIN1` to the bottom one. `Interrupt_enableInterrupt` enables the port interrupt function to be called.
+
+Two interrupts are used for the pushbuttons as follows:
+
+```c
+    void PORT5_IRQHandler(void)
+    {
+        if ((GPIO_getEnabledInterruptStatus(GPIO_PORT_P5) & GPIO_PIN1))
+        {
+            GPIO_clearInterruptFlag(GPIO_PORT_P5, GPIO_PIN1);
+            event = BUTTON1_PRESSED;
+        }
+    }
+```
+In this case, the top pushbutton is pressed and changes the event variable. The main function checks the state based on the event and calls the corresponding `fn_CITY_NAME` funtions to update the current state of the FSM and display weather information. Each fn_CITY function is defined as follows: 
+
+```c
+    void fn_CITY_NAME()
+    {
+        if (event == BUTTON1_PRESSED)
+        {
+            display_weather();
+            current_state = NEXT_CITY;
+        }
+        else if (event == BUTTON2_PRESSED)
+        {
+            display_weather();
+            current_state = PREVIOUS_CITY;
+        }
+    }
+```
+considering that the order is ROME<--->MOSCOU<--->NEW YORK<--->TOKYO with `BUTTON1_PRESSED` going forwards and `BUTTON2_PRESSED` going backwards in the order given above.
+
+
+# Team members
 Bortolon Matteo 
 Bouveret Samuele
 
 We worked together on the code part and the video, helping each other when needed. Matteo then focused on the presentation PowerPoint and Samuele on the GitHub page.
-
-```c
-  #define 
-  #define 
-```
-
-
-
-In the future I plan to add more plants .
-
-our Readme file should include the following:
-○ What are needed to run the project:
-■ Hardware/software requirements
-○ Project Layout
-■ Source code organization
-○ How to build, burn and run your project
-○ Links to your powerpoint presentation and to your Youtube video
-○ Team **members**:
-■ explaining clearly how the members contributed to the project
