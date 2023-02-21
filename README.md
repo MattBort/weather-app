@@ -1,17 +1,17 @@
 # Weather APP
 
-This application displays weather information of different cities via the MSP432P401R. Weather type and temperature is fetched through an API using the CC3100 WiFi module and then displayed on the LCD screen of the BoosterPack MKII.
+This application displays weather information of different cities via the MSP432P401R. Weather type, temperature and humidity is fetched through an API using the CC3100 WiFi module and then displayed on the LCD screen of the BoosterPack MKII.
 ## Hardware requirements
 
 | Module | Usage | Description |
 | :- | :- | :- |
 | MSP432P401R | Data elaboration | Microcontroller used to elaborate and display the received data. |
 | CC3100Boost    | API request and response handling | Used to connect to a WiFi network and creates a request to an online API to retrieve data about weather. |
-| BoosterPack MKII      | LCD display and pushbuttons | The LCD display is used to display data and the 2 pushbuttons to navigate to the different cities avaiable. |
+| BoosterPack MKII      | LCD display and pushbuttons | The LCD display is used to display data and the 2 pushbuttons to navigate through the different cities avaiable. |
 
 ## Software requirements
 
-Code Composer Studio(CCS) 10.1.0 IDE is used to code, compile, debug and burn into the MSP432P401R. Texas Instruments driverlib is used for higher code abstraction.
+Code Composer Studio(CCS) 10.1.0 IDE is used to code, compile, debug and burn into the MSP432P401R. Texas Instruments driverlib is used for higher code abstraction and the simplelink library for the WiFi communication part.
 ## Project structure
 The `wifi-part1` folder contains the code regarding the retrival part of the information. It uses the MSP432P401R combined with the CC3100Boost module to connect and fetch the data. The `lcd-part2` folder contains the LCD and pusbuttons code to display the information.
 
@@ -50,6 +50,7 @@ weather app
 
 ## Build, burn and run
 1.Create 2 blank MSP432P401R projects in CCS, one for each of the 2 parts.
+
 2. Replace every file in the project folders. 
 
 3.a Part 1: also replace .cproject file inside the project to include dependecies.
@@ -121,7 +122,7 @@ The interrupts are enabled in the hardware initialization function as follow:
 ```
 Note that the flag is cleared to avoid wrongfull trigger before a button is pressed. `GPIO_PORT_P3, GPIO_PIN5` refers the the top pushbutton and `GPIO_PORT_P5, GPIO_PIN1` to the bottom one. `Interrupt_enableInterrupt` enables the port interrupt function to be called.
 
-Two interrupts are used for the pushbuttons as follows:
+This is one of the two interrupts function called:
 
 ```c
     void PORT5_IRQHandler(void)
