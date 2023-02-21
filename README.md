@@ -1,8 +1,6 @@
 # Weather APP
-
 This application displays weather information of different cities via the MSP432P401R. Weather type, temperature and humidity is fetched through an API using the CC3100 WiFi module and then displayed on the LCD screen of the BoosterPack MKII.
 ## Hardware requirements
-
 | Module | Usage | Description |
 | :- | :- | :- |
 | MSP432P401R | Data elaboration | Microcontroller used to elaborate and display the received data. |
@@ -10,7 +8,6 @@ This application displays weather information of different cities via the MSP432
 | BoosterPack MKII      | LCD display and pushbuttons | The LCD display is used to display data and the 2 pushbuttons to navigate through the different cities avaiable. |
 
 ## Software requirements
-
 Code Composer Studio(CCS) 10.1.0 IDE is used to code, compile, debug and burn into the MSP432P401R. Texas Instruments driverlib is used for higher code abstraction and the simplelink library for the WiFi communication part.
 ## Project structure
 The `wifi-part1` folder contains the code regarding the retrival part of the information. It uses the MSP432P401R combined with the CC3100Boost module to connect and fetch the data. The `lcd-part2` folder contains the LCD and pusbuttons code to display the information.
@@ -132,7 +129,7 @@ This is one of the two interrupts function called:
         }
     }
 ```
-In this case, the top pushbutton is pressed and changes the event variable. The main function checks the state based on the event and calls the corresponding `fn_CITY_NAME` funtions to update the current state of the FSM and display weather information. Each fn_CITY function is defined as follows: 
+In this case, the top pushbutton is pressed and changes the event variable. The main function checks the state based on the event and calls the corresponding `fn_CITY_NAME` funtions to update the current state of the FSM and display weather information. Each fn_CITY_NAME function is defined as follows: 
 
 ```c
     void fn_CITY_NAME()
@@ -160,7 +157,7 @@ With `BUTTON1_PRESSED` going clockwise and `BUTTON2_PRESSED` going counter-clock
 
 The application goes on indefinitely.
 
-# Team members
+## Team members
 Bortolon Matteo 
 Bouveret Samuele
 
