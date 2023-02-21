@@ -74,7 +74,7 @@ Then the request, response information(server and GET request) and lenght is def
     #define POST_BUFFER     " HTTP/1.1\r\nHost:cctest.free.beeceptor.com\r\nAccept: */"
     #define POST_BUFFER2    "*\r\n\r\n"
 
-    #define SMALL_BUF           32 //For hostname
+    #define SMALL_BUF           32 //For the hostname
     #define MAX_SEND_BUF_SIZE   512
     #define MAX_SEND_RCV_SIZE   300
 ```
@@ -156,7 +156,7 @@ Considering that the order is:
     |           |
     TOKYO --- NEW YORK
 
-with `BUTTON1_PRESSED` going clockwise and `BUTTON2_PRESSED` going counter-clockwise in the order given.
+With `BUTTON1_PRESSED` going clockwise and `BUTTON2_PRESSED` going counter-clockwise in the order given.
 
 The application goes on indefinitely.
 
