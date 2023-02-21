@@ -49,15 +49,15 @@ weather app
 ```
 
 ## Build, burn and run
-1.Create 2 blank MSP432P401R projects in CCS, one for each of the 2 parts.
+1 Create 2 blank MSP432P401R projects in CCS, one for each of the 2 parts.
 
-2. Replace every file in the project folders. 
+2 Replace every file in the project folders. 
 
-3.a Part 1: also replace .cproject file inside the project to include dependecies.
+3a Part 1: also replace .cproject file inside the project to include dependecies.
 
-3.b Part 2: add simplelink_msp432p4_sdk_3_40_01_02/source" directory to "Add dir to #include search path" window in CCS Build->ARM Compiler->Include options in project properties.
-Then add simplelink_msp432p4_sdk_3_40_01_02/source/ti/devices/msp432p4xx/driverlib/ccs/msp432p4xx_driverlib.lib and ../source/ti/grlib/lib/css/m4f/grlib.a to "Include library file..." in CCS Build->ARM linker->File Search Path.
-4. Build the project and start debugging with the MSP432 plugged in to run the app.
+3b Part 2: add simplelink_msp432p4_sdk_3_40_01_02/source" directory to "Add dir to #include search path" window in CCS Build->ARM Compiler->Include options in project properties. Then add simplelink_msp432p4_sdk_3_40_01_02/source/ti/devices/msp432p4xx/driverlib/ccs/msp432p4xx_driverlib.lib and ../source/ti/grlib/lib/css/m4f/grlib.a to "Include library file..." in CCS Build->ARM linker->File Search Path.
+
+4 Build the project and start debugging with the MSP432 plugged in to run the app.
 
 # Part 1: code analysis
 This part of the project allows comunication with an API through a WiFi connection. We used our personal WiFi router to connect to the internet and send a request. The credentials are defined as follows:
