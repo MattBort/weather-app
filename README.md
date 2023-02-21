@@ -4,7 +4,7 @@ This application displays weather information of different cities via the MSP432
 | Module | Usage | Description |
 | :- | :- | :- |
 | MSP432P401R | Data elaboration | Microcontroller used to elaborate and display the received data. |
-| CC3100Boost    | API request and response handling | Used to connect to a WiFi network and creates a request to an online API to retrieve data about weather. |
+| CC3100Boost | API request and response handling | Used to connect to a WiFi network and creates a request to an online API to retrieve data about weather. |
 | BoosterPack MKII      | LCD display and pushbuttons | The LCD display is used to display data and the 2 pushbuttons to navigate through the different cities avaiable. |
 
 ## Software requirements
@@ -42,7 +42,7 @@ weather app
    ├── startup_msp432p401r_css.c 
    ├── system_msp432p401r.c  
    └── weather.h  [custom header file containing data structures and functions used in main file]
-
+   
 ```
 
 ## Build, burn and run
@@ -58,6 +58,7 @@ weather app
 
 # Part 1: code analysis
 This part of the project allows comunication with an API through a WiFi connection. We used our personal WiFi router to connect to the internet and send a request. The credentials are defined as follows:
+
 ```c
     #define SSID_NAME "YOUR_AP_SSID"
     #define PASSKEY "YOUR_WIFI_PASSWORD"   
@@ -153,7 +154,7 @@ Considering that the order is:
     |           |
     TOKYO --- NEW YORK
 
-With `BUTTON1_PRESSED` going clockwise and `BUTTON2_PRESSED` going counter-clockwise in the order given.
+With `BUTTON1_PRESSED` going clockwise and `BUTTON2_PRESSED` going counter-clockwise in the order given starting from Rome.
 
 The application goes on indefinitely.
 
