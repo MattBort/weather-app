@@ -1,16 +1,16 @@
 # Weather APP
-This application displays weather information of different cities via the MSP432P401R. Weather type, temperature and humidity is fetched through an API using the CC3100 WiFi module and then displayed on the LCD screen of the BoosterPack MKII.
+This application displays weather information of different cities and current room temperature via the MSP432P401R. Weather type, temperature and humidity is fetched through an API using the CC3100 WiFi module and then displayed on the LCD screen of the BoosterPack MKII.
 ## Hardware requirements
 | Module | Usage | Description |
 | :- | :- | :- |
 | MSP432P401R | Data elaboration | Microcontroller used to elaborate and display the received data. |
 | CC3100Boost | API request and response handling | Used to connect to a WiFi network and creates a request to an online API to retrieve data about weather. |
-| BoosterPack MKII      | LCD display and pushbuttons | The LCD display is used to display data and the 2 pushbuttons to navigate through the different cities avaiable. |
+| BoosterPack MKII      | LCD display and pushbuttons | The LCD display is used to display data and the 2 pushbuttons to navigate through the different cities avaiable. The temperature sensor is also used. |
 
 ## Software requirements
 Code Composer Studio(CCS) 10.1.0 IDE is used to code, compile, debug and burn into the MSP432P401R. Texas Instruments driverlib is used for higher code abstraction and the simplelink library for the WiFi communication part.
 ## Project structure
-The `wifi-part1` folder contains the code regarding the retrival part of the information. It uses the MSP432P401R combined with the CC3100Boost module to connect and fetch the data. The `lcd-part2` folder contains the LCD and pusbuttons code to display the information.
+The `wifi-part1` folder contains the code regarding the retrival part of the information. It uses the MSP432P401R combined with the CC3100Boost module to connect and fetch the data. The `lcd-part2` folder contains the LCD, temperature sensor and pusbuttons code to display the information.
 
 ```text
 weather app  
@@ -36,6 +36,8 @@ weather app
 │   ├── startup_msp432p401r_css.c  [CCS startup code for MSP432 interrupts]
 │   └── system_msp432p401r.c  [MSP432 system initialization]
 └──lcd-part2
+   ├── HAL  [Hardware Abstraction Level folder containing functions for temperature sensing]
+   ├── icons  [folder containing icons for display usage]
    ├── LcdDriver  [driver for lcd screen usage]
    ├── main.c  [main C file]
    ├── msp432p401r.cmd 
@@ -54,7 +56,7 @@ weather app
 
 3b Part 2: add simplelink_msp432p4_sdk_3_40_01_02/source" directory to "Add dir to #include search path" window in CCS Build->ARM Compiler->Include options in project properties. Then add simplelink_msp432p4_sdk_3_40_01_02/source/ti/devices/msp432p4xx/driverlib/ccs/msp432p4xx_driverlib.lib and ../source/ti/grlib/lib/css/m4f/grlib.a to "Include library file..." in CCS Build->ARM linker->File Search Path.
 
-4 Build the project and start debugging with the MSP432 plugged in to run the app.
+4 Build the project and start debugging with the MSP432 with the corresponding module based on project part plugged in to run the app.
 
 # Part 1: code analysis
 This part of the project allows comunication with an API through a WiFi connection. We used our personal WiFi router to connect to the internet and send a request. The credentials are defined as follows:
@@ -94,16 +96,28 @@ A connection with the WiFi is then created if the credentials are correct; the a
 Afterwards, the microcontroller is disconnected from the WiFi `disconnectFromAP` and the execution ends. For part 2 we assume a correct JSON response has been sent to display information.
 
 # Part 2: code analysis
-In the second part the LCD screen and pushbuttons are used to display the data using an FSM. Each state is triggered by the next/previous pushbuttons of the BoosterPack MKII. We defined 4 states(one for each city) with the correspondent functions in the `weather.h` header file and the button press events that are used to trigger the corresponding interrupt to display the city.
+In the second part the LCD screen and pushbuttons are used to display the data using an FSM. The temperature sensor is used to display room temperature. Each state is triggered by the next/previous pushbuttons of the BoosterPack MKII. We defined 5 states(one for each city+current room temperature) with the correspondent functions in the `weather.h` header file and the button press events that are used to trigger the corresponding interrupt to display the correct state.
 
-In the main file we instantiate the FSM and the `current_state` and `event` variable. The current state is set to the first city to be displayed which is Rome and the event to None:
+In the main file we instantiate the FSM and the `current_state` and `event` variable. The current state is set to the first state to be displayed which is the current room temperature and the event to None:
 
 ```c
     State_t current_state = STATE_ROME;
     Event_t event = EVENT_NONE;
-    StateMachine_t fsm[] = { { STATE_ROME, fn_ROME }, { STATE_MOSCOU, fn_MOSCOU }, {STATE_NEWYORK, fn_NEWYORK }, { STATE_TOKYO, fn_TOKYO } };
+    StateMachine_t fsm[] = { { STATE_ROME, fn_ROME }, { STATE_MOSCOW, fn_MOSCOW }, {STATE_NEWYORK, fn_NEWYORK }, { STATE_TOKYO, fn_TOKYO } };
 ```
-In the main function, the hardware, graphics, internal clocks and interrupts are initialized via the `_hwInit` and `_graphicsInit` functions and the first city is displayed. The microcontrollers then goes into low power mode and waits for an interrupt.
+A struct to hold city information is then created and each icon to be displayer on the LCD are defined.
+
+```c
+    City_t cities[4];
+
+    extern const Graphics_Image cloudy;
+    extern const Graphics_Image sunny;
+    extern const Graphics_Image snowy;
+    extern const Graphics_Image rainy;
+    extern const Graphics_Image home;
+```
+
+In the main function, the hardware, graphics, internal clocks, interrupts and temperature sensor are initialized via the `_hwInit` and `_graphicsInit` functions and the first state is displayed. The microcontrollers then goes into low power mode and waits for an interrupt. I2C communication is used for the temperature sensor.
 
 The interrupts are enabled in the hardware initialization function as follow:
 ```c
@@ -115,6 +129,11 @@ The interrupts are enabled in the hardware initialization function as follow:
 
     Interrupt_enableInterrupt(INT_PORT3);
     Interrupt_enableInterrupt(INT_PORT5);
+
+    Init_I2C_GPIO();
+    I2C_init();
+
+    TMP006_init();
 ```
 Note that the flag is cleared to avoid a wrongful trigger before a button is pressed. `GPIO_PORT_P3, GPIO_PIN5` refers the the top pushbutton and `GPIO_PORT_P5, GPIO_PIN1` to the bottom one. `Interrupt_enableInterrupt` enables the port interrupt function to be called.
 
@@ -130,7 +149,7 @@ This is one of the two interrupts function called:
         }
     }
 ```
-In this case, the top pushbutton is pressed and changes the event variable. The main function checks the state based on the event and calls the corresponding `fn_CITY_NAME` funtions to update the current state of the FSM and display weather information. Each fn_CITY_NAME function is defined as follows: 
+In this case, the top pushbutton is pressed and changes the event variable. The main function checks the state based on the event and calls the corresponding `fn_FUNCTION_NAME` funtions to update the current state of the FSM and display weather information. Each fn_FUNCTION_NAME function is defined as follows: 
 
 ```c
     void fn_CITY_NAME()
@@ -147,14 +166,52 @@ In this case, the top pushbutton is pressed and changes the event variable. The 
         }
     }
 ```
-Considering that the order is: 
+To display the room temperature we used another function, `display_temp`. It uses the HAL functions for temperature sensing and we then update the Fahrenheit result into Celsius scale. Then all the data is displayed.
 
-    ROME ---  MOSCOU
-    |           |
-    |           |
-    TOKYO --- NEW YORK
+```c
+void display_temp()
+{
+    Graphics_clearDisplay(&g_sContext);
 
-With `BUTTON1_PRESSED` going clockwise and `BUTTON2_PRESSED` going counter-clockwise in the order given starting from Rome.
+    char str[10];
+    float temperature;
+
+    temperature = TMP006_getTemp();
+    temperature = (temperature - 32) / 1.8;
+
+    sprintf(str, "%.1f", temperature);
+    strcat(str, "C");
+
+    /* Information display. */
+    Graphics_drawStringCentered(&g_sContext, (int8_t*) "CURRENT ROOM",
+    AUTO_STRING_LENGTH,
+                                64, 30, OPAQUE_TEXT);
+    Graphics_drawImage(&g_sContext, &home, 52, 40);
+
+    Graphics_drawStringCentered(&g_sContext, (int8_t*) "Temperature:",
+    AUTO_STRING_LENGTH,
+                                64, 72, OPAQUE_TEXT);
+
+    Graphics_drawStringCentered(&g_sContext, (int8_t*) str,
+    AUTO_STRING_LENGTH,
+                                64, 82, OPAQUE_TEXT);
+}
+
+```
+
+Considering that the FSM state order is: 
+
+```
+           ROOM                
+        /       \
+       /         \
+  NEW YORK       ROME
+     |            |
+     |            |
+   TOKYO ----- MOSCOW
+```
+
+With `BUTTON1_PRESSED` going clockwise and `BUTTON2_PRESSED` going counter-clockwise in the order given starting from ROOM.
 
 The application goes on indefinitely.
 
