@@ -17,7 +17,7 @@
 
 #define MOCK_SERVER  "cctest.free.beeceptor.com"
 
-#define PREFIX_BUFFER   "GET /my/api/path"
+#define PREFIX_BUFFER   "GET /my/api"
 #define POST_BUFFER     " HTTP/1.1\r\nHost:cctest.free.beeceptor.com\r\nAccept: */"
 #define POST_BUFFER2    "*\r\n\r\n"
 
@@ -275,9 +275,7 @@ static _i32 createConnection()
 /* This function Obtains the required data from the server. */
 static _i32 getData()
 {
-    _u8 *p_startPtr = NULL;
     _u8 *p_bufLocation = NULL;
-    _u8 *p_endPtr = NULL;
     _i32 retVal = -1;
 
     pal_Memset(g_AppData.Recvbuff, 0, sizeof(g_AppData.Recvbuff));

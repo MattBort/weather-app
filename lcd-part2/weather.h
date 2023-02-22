@@ -7,16 +7,23 @@
 #ifndef __WEATHER_H__
 #define __WEATHER_H__
 
+/* Constants for string length for city data. */
+#define NAME_LENGTH 50
+#define TEMP_LENGTH 7
+#define WEATHER_LENGTH 100
+#define HUMIDITY_LENGTH 20
+
 /**
  * Defines the different states.
  * 
- * STATE_INIT -> default state for startup.
+ * STATE_TEMP -> default state to display room temperature.
  * STATE_X -> one state for each city.
+ * STATE_NUM -> used for control purposes.
  *
  */
 typedef enum
 {
-    STATE_ROME, STATE_MOSCOU, STATE_NEWYORK, STATE_TOKYO, STATE_NUM
+    STATE_TEMP, STATE_ROME, STATE_MOSCOW, STATE_TOKYO, STATE_NEWYORK, STATE_NUM
 } State_t;
 
 /**
@@ -33,7 +40,7 @@ typedef struct
 
 /**
  * Defines the enum for button presses
- * or for when no event occurred.
+ * or none as event.
  */
 typedef enum
 {
@@ -41,19 +48,32 @@ typedef enum
 } Event_t;
 
 /**
- * Executed function called based on the current
- * state and events. Rome is the default city
- * after hardware initialization.
+ * Struct that holds information for a specific city.
  */
+typedef struct
+{
+    char name[NAME_LENGTH];
+    char temperature[TEMP_LENGTH];
+    char weather_type[WEATHER_LENGTH];
+    char humidity[HUMIDITY_LENGTH];
+} City_t;
+
+/**
+ * Executed function called based on the current
+ * state and events. TEMP is the default displayed
+ * data after hardware initialization.
+ */
+void fn_TEMP(void);
 void fn_ROME(void);
-void fn_MOSCOU(void);
-void fn_NEWYORK(void);
+void fn_MOSCOW(void);
 void fn_TOKYO(void);
+void fn_NEWYORK(void);
 
 /**
  * Updates the LCD display with the correct
- * city's information.
+ * city's or room information.
  */
+void display_temp();
 void display_weather(int);
 
 #endif
