@@ -215,6 +215,9 @@ With `BUTTON1_PRESSED` going clockwise and `BUTTON2_PRESSED` going counter-clock
 
 The application goes on indefinitely.
 
+## YouTube video link
+https://youtu.be/K7lWlSoeSzo
+
 ## Team members
 Bortolon Matteo 
 Bouveret Samuele
