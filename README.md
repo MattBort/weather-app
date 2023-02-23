@@ -103,7 +103,7 @@ In the main file we instantiate the FSM and the `current_state` and `event` vari
 ```c
     State_t current_state = STATE_ROME;
     Event_t event = EVENT_NONE;
-    StateMachine_t fsm[] = { { STATE_ROME, fn_ROME }, { STATE_MOSCOW, fn_MOSCOW }, {STATE_NEWYORK, fn_NEWYORK }, { STATE_TOKYO, fn_TOKYO } };
+    StateMachine_t fsm[] = { { STATE_TEMP, fn_TEMP }, { STATE_ROME, fn_ROME }, { STATE_MOSCOW, fn_MOSCOW }, {STATE_NEWYORK, fn_NEWYORK }, { STATE_TOKYO, fn_TOKYO } };
 ```
 A struct to hold city information is then created and each icon to be displayer on the LCD are defined.
 
