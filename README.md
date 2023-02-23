@@ -36,7 +36,7 @@ weather app
 │   ├── startup_msp432p401r_css.c  [CCS startup code for MSP432 interrupts]
 │   └── system_msp432p401r.c  [MSP432 system initialization]
 └──lcd-part2
-   ├── HAL  [Hardware Abstraction Level folder containing functions for temperature sensing]
+   ├── HAL  [Hardware Abstraction Layer folder containing functions for temperature sensing]
    ├── icons  [folder containing icons for display usage]
    ├── LcdDriver  [driver for lcd screen usage]
    ├── main.c  [main C file]
